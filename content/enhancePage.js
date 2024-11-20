@@ -9,8 +9,7 @@ const enhancePage = (domain, user) => {
 
     const buttons = document.querySelectorAll(".savedsearches-newbuttons");
     if (buttons && buttons[0]) {
-        addButton(buttons[0], "schedulator-button", "Schedulator", () => handleCheckboxSchedulatorButtonClick(domain, user));
-        addButton(buttons[0], "mass-schedulator-button", "Mass Schedulator 🚀", () => handleCSVSchedulatorButtonClick(domain, user));
+        addButton(buttons[0], "schedulator-button-main", "Schedulator 🚀", () => handleSchedulatorButtonClick(domain, user));
     }
 };
 
@@ -48,6 +47,14 @@ const processCSVSchedule = (csvCronDefinition, domain, user) => {
     location.reload();
 };
 
+const processDeschedule = (checkedValues, domain, user, app) => {
+    checkedValues.forEach(value => {
+        const [id, app] = value.split(":");
+        postDeschedule(id, domain, user, app);
+    });
+    location.reload();
+};
+
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
     const cronValue = getCronExpression('Enter cron expression:');
     if (cronValue) {
@@ -70,9 +77,52 @@ const handleCSVSchedulatorButtonClick = (domain, user) => {
     }
 };
 
+const handleDescheduleButtonClick = (domain, user) => {
+    const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
+        .map(checkbox => checkbox.value);
+    processDeschedule(checkedValues, domain, user);
+};
+
+const handleSchedulatorButtonClick = (domain, user) => {
+    createSchedulatorModal(domain, user);
+}
+
 const postCronSchedule = (searchName, cronValue, domain, user, app) => {
     const url = buildScheduleCallURL(searchName, user, domain, app);
     const body = `cron_schedule=${cronValue.trim().replace(/\s/g, "+")}&is_scheduled=1`;
+    const csrfToken = getCSRFToken();
+
+    if (!csrfToken) {
+        console.error("CSRF token missing. Aborting POST request.");
+        return;
+    }
+
+    sendServicesPostRequest(url, body, csrfToken)
+        .then(response => {
+            if (response.ok) {
+                console.log("POST request successful.");
+                return response.text();
+            } else {
+                console.error("POST request failed with status:", response.status);
+            }
+        })
+        .then(data => {
+            if (data) {
+                //do nothing for now
+            }
+        })
+        .catch(error => {
+            // if error is TypeError then ignore it
+            if (error instanceof TypeError) {
+                return;
+            }
+            console.error("Error during POST request:", error);
+        });
+};
+
+const postDeschedule = (searchName, domain, user, app) => {
+    const url = buildScheduleCallURL(searchName, user, domain, app);
+    const body = `is_scheduled=0`;
     const csrfToken = getCSRFToken();
 
     if (!csrfToken) {
