@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "Splunk Schedulator",
+    "version": "1.0",
+    "description": "Automate scheduling of multiple Splunk searches.",
+    "permissions": ["activeTab", "scripting"],
+    "host_permissions": ["*://*/*"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": [
+          "content/apiUtils.js",
+          "content/domUtils.js",
+          "content/enhanceTable.js",
+          "content/observer.js",
+          "content/content.js"
+        ]
+      }
+    ]
+  }
+  
