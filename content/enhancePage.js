@@ -74,10 +74,9 @@ const handleAllSelectCheckboxChange = () => {
     checkboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
 }
 
-const handleCSVSchedulatorButtonClick = (domain, user) => {
-    const cronValue = getCronExpression('Enter CSV cron definition [id,cron-expression]:');
-    if (cronValue) {
-        processCSVSchedule(cronValue, domain, user);
+const handleCSVSchedulatorButtonClick = (domain, user, csvCron) => {
+    if (csvCron) {
+        processCSVSchedule(csvCron, domain, user);
     }
 };
 
