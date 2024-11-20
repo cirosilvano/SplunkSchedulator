@@ -14,7 +14,7 @@
         "js": [
           "content/apiUtils.js",
           "content/domUtils.js",
-          "content/enhanceTable.js",
+          "content/enhancePage.js",
           "content/observer.js",
           "content/content.js"
         ]

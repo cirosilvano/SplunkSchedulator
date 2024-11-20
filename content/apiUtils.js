@@ -4,7 +4,7 @@ const getCSRFToken = () => {
     return cookies.find(cookie => cookie.startsWith('splunkweb_csrf_token_'))?.split('=')[1] || null;
 };
 
-const getUserFromAttributes = () => {
+const extractSplunkUser = () => {
     let user = null;
     document.querySelectorAll('[data-icosrc]').forEach(el => {
         const match = el.getAttribute('data-icosrc').match(/\/splunkd\/__raw\/servicesNS\/([^/]+)\//);
@@ -15,11 +15,12 @@ const getUserFromAttributes = () => {
     return user;
 };
 
-const buildPostURL = (searchName, user, domain) => {
+const buildScheduleCallURL = (searchName, user, domain) => {
+    // for calling servicesNS API as current user (as if it were called from frontend)
     return `${domain}/splunkd/__raw/servicesNS/${user}/search/saved/searches/${encodeURIComponent(searchName)}`;
 };
 
-const sendPostRequest = (url, body, csrfToken) => {
+const sendServicesPostRequest = (url, body, csrfToken) => {
     return fetch(url, {
         method: "POST",
         headers: {
