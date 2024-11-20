@@ -21,9 +21,10 @@ const getCronExpression = (message) => {
 };
 
 // Function to process cron schedule for a single value
-const processCheckboxSchedule = (checkedValues, cronValue, domain, user) => {
+const processCheckboxSchedule = (checkedValues, cronValue, domain, user, app) => {
     checkedValues.forEach(value => {
-        postCronSchedule(value, cronValue, domain, user);
+        const [id, app] = value.split(":");
+        postCronSchedule(id, cronValue, domain, user, app);
     });
     location.reload();
 };
@@ -32,8 +33,17 @@ const processCheckboxSchedule = (checkedValues, cronValue, domain, user) => {
 const processCSVSchedule = (csvCronDefinition, domain, user) => {
     const rows = csvCronDefinition.split("\n");
     rows.forEach(row => {
-        const [id, cron] = row.split(",");
-        postCronSchedule(id, cron, domain, user);
+        const [app, id, cron] = row.split(",");
+        try {
+            postCronSchedule(id, cron, domain, user, app);
+        } catch(e) {
+            if (e instanceof TypeError) {
+                alert("Invalid CSV schedule format. Please provide a valid CSV format.");
+            } else {
+                console.error(e);
+            }
+        }
+        
     });
     location.reload();
 };
@@ -60,8 +70,8 @@ const handleCSVSchedulatorButtonClick = (domain, user) => {
     }
 };
 
-const postCronSchedule = (searchName, cronValue, domain, user) => {
-    const url = buildScheduleCallURL(searchName, user, domain);
+const postCronSchedule = (searchName, cronValue, domain, user, app) => {
+    const url = buildScheduleCallURL(searchName, user, domain, app);
     const body = `cron_schedule=${cronValue.trim().replace(/\s/g, "+")}&is_scheduled=1`;
     const csrfToken = getCSRFToken();
 

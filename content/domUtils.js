@@ -24,12 +24,14 @@ const addCheckboxesToRows = (rows) => {
     rows.forEach(row => {
         if (!row.querySelector(".cell-select")) {
             const nameCell = row.querySelector(".cell-name a");
+            const appCell = row.querySelector(".cell-app");
             const nameValue = nameCell ? nameCell.textContent.trim() : "";
+            const appValue = appCell ? appCell.textContent.trim() : "";
 
             const td = document.createElement("td");
             td.innerHTML = `
                 <div class="cell-select" style="text-align:center;">
-                    <input style="margin-top: 0.5rem" type="checkbox" class="schedulator-checkbox" name="entity-name" value="${nameValue}">
+                    <input style="margin-top: 0.5rem" type="checkbox" class="schedulator-checkbox" name="entity-name" value="${nameValue}:${appValue}">
                 </div>
             `;
             row.prepend(td);

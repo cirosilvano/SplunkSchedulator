@@ -15,9 +15,9 @@ const extractSplunkUser = () => {
     return user;
 };
 
-const buildScheduleCallURL = (searchName, user, domain) => {
+const buildScheduleCallURL = (searchName, user, domain, app) => {
     // for calling servicesNS API as current user (as if it were called from frontend)
-    return `${domain}/splunkd/__raw/servicesNS/${user}/search/saved/searches/${encodeURIComponent(searchName)}`;
+    return `${domain}/splunkd/__raw/servicesNS/${user}/${app}/saved/searches/${encodeURIComponent(searchName)}`;
 };
 
 const sendServicesPostRequest = (url, body, csrfToken) => {
