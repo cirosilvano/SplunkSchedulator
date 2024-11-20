@@ -20,7 +20,7 @@ const getCronExpression = (message) => {
 };
 
 // Function to process cron schedule for a single value
-const processCheckboxSchedule = (checkedValues, cronValue, domain, user, app) => {
+const processCheckboxSchedule = (checkedValues, cronValue, domain, user) => {
     checkedValues.forEach(value => {
         const [id, app] = value.split(":");
         postCronSchedule(id, cronValue, domain, user, app);
@@ -47,7 +47,7 @@ const processCSVSchedule = (csvCronDefinition, domain, user) => {
     location.reload();
 };
 
-const processDeschedule = (checkedValues, domain, user, app) => {
+const processDeschedule = (checkedValues, domain, user) => {
     checkedValues.forEach(value => {
         const [id, app] = value.split(":");
         postDeschedule(id, domain, user, app);
@@ -56,10 +56,14 @@ const processDeschedule = (checkedValues, domain, user, app) => {
 };
 
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
+    const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
+        .map(checkbox => checkbox.value);
+    if(checkedValues.length === 0) {
+        alert("Please select at least one search to schedule.");
+        return;
+    };
     const cronValue = getCronExpression('Enter cron expression:');
     if (cronValue) {
-        const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
-            .map(checkbox => checkbox.value);
         processCheckboxSchedule(checkedValues, cronValue, domain, user);
     }
 };
@@ -80,6 +84,10 @@ const handleCSVSchedulatorButtonClick = (domain, user) => {
 const handleDescheduleButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
+    if(checkedValues.length === 0) {
+        alert("Please select at least one search to deschedule.");
+        return;
+    };
     processDeschedule(checkedValues, domain, user);
 };
 
