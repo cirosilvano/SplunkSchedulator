@@ -1,13 +1,22 @@
 // domUtils.js
-const addHeaderToTable = (table) => {
+const addHeaderToTable = (table, handleAllSelectCheckboxClick) => {
     const headerRow = table.querySelector("thead tr");
     if (headerRow && !headerRow.querySelector("#select-th")) {
         const th = document.createElement("th");
-        th.className = "sort";
         th.id = "select-th";
-        th.setAttribute("data-sort-key", "disabled");
-        th.innerHTML = `<div>Select</div>`;
+        th.style.padding = "0";
+        th.innerHTML = `
+        <div style="display:flex;flex-direction:flex-row;padding:0;width:100%;justify-content:center">
+            <input type="checkbox" id="select-all-checkbox" style="margin-bottom:0.2rem;">
+            <div class="">
+                Select all
+            </div>
+        </div>
+        `;
         headerRow.prepend(th);
+
+        const selectAllCheckbox = document.querySelector("#select-all-checkbox");
+        selectAllCheckbox.addEventListener("change", handleAllSelectCheckboxClick);
     }
 };
 

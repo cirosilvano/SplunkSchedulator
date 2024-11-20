@@ -2,7 +2,7 @@ const enhancePage = (domain, user) => {
     const table = document.querySelector(".entities-grid");
 
     if (table) {
-        addHeaderToTable(table);
+        addHeaderToTable(table, handleAllSelectCheckboxChange);
         const rows = table.querySelectorAll("tbody tr");
         addCheckboxesToRows(rows);
     }
@@ -10,7 +10,7 @@ const enhancePage = (domain, user) => {
     const buttons = document.querySelectorAll(".savedsearches-newbuttons");
     if (buttons && buttons[0]) {
         addButton(buttons[0], "schedulator-button", "Schedulator", () => handleCheckboxSchedulatorButtonClick(domain, user));
-        addButton(buttons[0], "mass-schedulator-button", "Mass Schedulator", () => handleCSVSchedulatorButtonClick(domain, user));
+        addButton(buttons[0], "mass-schedulator-button", "Mass Schedulator 🚀", () => handleCSVSchedulatorButtonClick(domain, user));
     }
 };
 
@@ -46,6 +46,12 @@ const handleCheckboxSchedulatorButtonClick = (domain, user) => {
         processCheckboxSchedule(checkedValues, cronValue, domain, user);
     }
 };
+
+const handleAllSelectCheckboxChange = () => {
+    const checkboxes = document.querySelectorAll('.schedulator-checkbox');
+    const selectAllCheckbox = document.querySelector('#select-all-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+}
 
 const handleCSVSchedulatorButtonClick = (domain, user) => {
     const cronValue = getCronExpression('Enter CSV cron definition [id,cron-expression]:');
