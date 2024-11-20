@@ -57,19 +57,23 @@ const createSchedulatorModal = (domain, user) => {
             display: flex; align-items: center; justify-content: center;
             background: rgba(0, 0, 0, 0.5); z-index: 1000;
         `;
+
+        // home page
         modal.innerHTML = `
-            <div id="modal-content" style="background: white; padding: 2rem; border-radius: 0.5rem; text-align: center; position: relative;">
+            <div id="modal-content" style="background: white; padding: 2rem; border-radius: 0.5rem; text-align:center; position:relative; shadow: 0">
                 <h1 style="color: black">Schedulator</h1>
-                <h3 style="color: black">Choose an action:</h3>
-                <button class="close-modal" style="position: absolute; top: 0.5rem; right: 0.5rem;">×</button>
+                <h3 style="color: black">Choose your weapon 🔫</h3>
+                <button class="close-modal btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: white; border-color:white;">❌</button>
                 <a id="schedulator-btn-schedule-selected" href="#" class="btn" style="margin: 0.5rem;">Schedule selected ⏰</a>
                 <a id="schedulator-btn-deschedule-selected" href="#" class="btn" style="margin: 0.5rem;">Deschedule selected ❌</a>
                 <a id="schedulator-btn-mass-csv-import" href="#" class="btn" style="margin: 0.5rem;">Mass CSV import 📋</a>
+                <a id="schedulator-btn-export-selected" href="#" class="btn" style="margin: 0.5rem;">Export selected to CSV ⬇️</a>
             </div>
         `;
         
         document.body.appendChild(modal);
 
+        // csv import page
         document.querySelector("#schedulator-btn-mass-csv-import").addEventListener("click", () => {
             const modalContent = document.querySelector("#modal-content");
             modalContent.innerHTML = `
@@ -80,26 +84,37 @@ const createSchedulatorModal = (domain, user) => {
                 <a id="schedulator-btn-submit" href="#" class="btn" style="margin: 0.5rem;">Submit</a>
             `;
 
-            // Back button restores the original content
             document.querySelector("#schedulator-btn-back").addEventListener("click", () => {
                 modal.remove();
                 createSchedulatorModal(domain, user);
             });
 
-            // Submit button for processing
             document.querySelector("#schedulator-btn-submit").addEventListener("click", () => {
                 const csvData = document.querySelector("#csv-text-area").value;
                 handleCSVSchedulatorButtonClick(domain, user, csvData);
             });
+
+            // convert pasted content from excel/google sheets into csv
+            document.getElementById("csv-text-area").addEventListener("paste", (event) => {
+                event.preventDefault();
+                const textarea = event.target;
+                const clipboardData = (event.clipboardData || window.clipboardData).getData("text");
+                const modifiedData = clipboardData.replace(/\t/g, ",");
+                const { selectionStart, selectionEnd, value } = textarea;
+                textarea.value = value.slice(0, selectionStart) + modifiedData + value.slice(selectionEnd);
+                textarea.setSelectionRange(selectionStart + modifiedData.length, selectionStart + modifiedData.length);
+            });
+            
         });
 
         // get button schedule-selected
         const scheduleSelectedButton = document.querySelector("#schedulator-btn-schedule-selected");
-        scheduleSelectedButton.addEventListener("click", () => handleCheckboxSchedulatorButtonClick(domain, user));
         const descheduleSelectedButton = document.querySelector("#schedulator-btn-deschedule-selected");
+        const exportSelectedButton = document.querySelector("#schedulator-btn-export-selected");
+
+        scheduleSelectedButton.addEventListener("click", () => handleCheckboxSchedulatorButtonClick(domain, user));
         descheduleSelectedButton.addEventListener("click", () => handleDescheduleButtonClick(domain, user));
-        const massCSVImportButton = document.querySelector("#schedulator-btn-mass-csv-import");
-        //massCSVImportButton.addEventListener("click", () => handleCSVSchedulatorButtonClick(domain, user));
+        exportSelectedButton.addEventListener("click", () => handleExportButtonClick(domain, user));
 
         modal.addEventListener("click", (e) => {
             if (e.target.id === "custom-modal" || e.target.classList.contains("close-modal")) {

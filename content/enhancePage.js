@@ -55,6 +55,33 @@ const processDeschedule = (checkedValues, domain, user) => {
     location.reload();
 };
 
+const processExport = async (checkedValues, domain, user) => {
+    let csvContent = "";
+
+    try {
+        for (const value of checkedValues) {
+            const [id, app] = value.split(":");
+            const cronSchedule = await getExportCronSchedule(id, domain, user, app);
+            csvContent += app + "," + id + "," + cronSchedule + "\n";
+        }
+
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "schedulator_output.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+
+    } catch (error) {
+        console.error("Error processing export:", error);
+        alert("Failed to process export. Please check console logs.");
+    }
+};
+
+
+        
+
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
@@ -89,6 +116,16 @@ const handleDescheduleButtonClick = (domain, user) => {
     };
     processDeschedule(checkedValues, domain, user);
 };
+
+const handleExportButtonClick = (domain, user) => {
+    const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
+        .map(checkbox => checkbox.value);
+    if(checkedValues.length === 0) {
+        alert("Please select at least one search to export.");
+        return;
+    };
+    processExport(checkedValues, domain, user);
+}
 
 const handleSchedulatorButtonClick = (domain, user) => {
     createSchedulatorModal(domain, user);
@@ -158,4 +195,32 @@ const postDeschedule = (searchName, domain, user, app) => {
             }
             console.error("Error during POST request:", error);
         });
+};
+
+const getExportCronSchedule = async (searchName, domain, user, app) => {
+    try {
+        const url = buildScheduleCallURL(searchName, user, domain, app);
+        const csrfToken = getCSRFToken();
+
+        if (!csrfToken) {
+            console.error("CSRF token missing. Aborting GET request.");
+            return null;
+        }
+
+        const response = await sendServicesGetRequest(url, csrfToken);
+        if (!response || !response.entry || !response.entry[0] || !response.entry[0].content) {
+            console.error("Unexpected response structure:", response);
+            return null;
+        }
+
+        const cronSchedule = response.entry[0].content.cron_schedule;
+        return cronSchedule;
+    } catch (error) {
+        if (error instanceof TypeError) {
+            console.warn("TypeError occurred but was ignored:", error);
+            return null;
+        }
+        console.error("Error during GET request:", error);
+        return null;
+    }
 };

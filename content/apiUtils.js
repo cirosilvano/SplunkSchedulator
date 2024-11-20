@@ -31,3 +31,25 @@ const sendServicesPostRequest = (url, body, csrfToken) => {
         body
     });
 };
+
+const sendServicesGetRequest = async (url, csrfToken) => {
+    const response = await fetch(url + "?output_mode=json", {
+        method: "GET",
+        headers: {
+            "X-Splunk-Form-Key": csrfToken,
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    });
+
+    if (!response.ok) {
+        console.error(`Fetch failed with status: ${response.status}`);
+        return null;
+    }
+
+    try {
+        return await response.json();
+    } catch (jsonError) {
+        console.error("Failed to parse JSON:", jsonError);
+        return null;
+    }
+};
