@@ -30,7 +30,7 @@ const processCheckboxSchedule = (checkedValues, cronValue, domain, user) => {
 
 // Function to process multiple schedules from CSV input
 const processCSVSchedule = (csvCronDefinition, domain, user) => {
-    const rows = csvCronDefinition.split("\n");
+    const rows = csvCronDefinition.trim().split("\n");
     rows.forEach(row => {
         const [app, id, cron] = row.split(",");
         try {
@@ -78,9 +78,6 @@ const processExport = async (checkedValues, domain, user) => {
         alert("Failed to process export. Please check console logs.");
     }
 };
-
-
-        
 
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
