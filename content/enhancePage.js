@@ -35,14 +35,14 @@ const processCSVSchedule = (csvCronDefinition, domain, user) => {
         const [app, id, cron] = row.split(",");
         try {
             postCronSchedule(id, cron, domain, user, app);
-        } catch(e) {
+        } catch (e) {
             if (e instanceof TypeError) {
                 alert("Invalid CSV schedule format. Please provide a valid CSV format.");
             } else {
                 console.error(e);
             }
         }
-        
+
     });
     location.reload();
 };
@@ -82,7 +82,7 @@ const processExport = async (checkedValues, domain, user) => {
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
-    if(checkedValues.length === 0) {
+    if (checkedValues.length === 0) {
         alert("Please select at least one search to schedule.");
         return;
     };
@@ -107,17 +107,24 @@ const handleCSVSchedulatorButtonClick = (domain, user, csvCron) => {
 const handleDescheduleButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
-    if(checkedValues.length === 0) {
+    if (checkedValues.length === 0) {
         alert("Please select at least one search to deschedule.");
         return;
     };
-    processDeschedule(checkedValues, domain, user);
+    let values = checkedValues.slice(0, 10).map(value => value.split(":")[1]);
+    if (checkedValues.length > 10) {
+        values.push(`and ${checkedValues.length - 10} more`);
+    }
+    const confirm = userConfirmed("Are you sure you want to deschedule the selected searches?\nThe following searches will be descheduled:\n" + values.join("\n"));
+    if (confirm) {
+        processDeschedule(checkedValues, domain, user);
+    }
 };
 
 const handleExportButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
-    if(checkedValues.length === 0) {
+    if (checkedValues.length === 0) {
         alert("Please select at least one search to export.");
         return;
     };
