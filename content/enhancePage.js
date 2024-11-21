@@ -111,12 +111,13 @@ const handleDescheduleButtonClick = (domain, user) => {
         alert("Please select at least one search to deschedule.");
         return;
     };
-    let values = checkedValues.slice(0, 10).map(value => value.split(":")[1]);
-    if (checkedValues.length > 10) {
-        values.push(`and ${checkedValues.length - 10} more`);
+    const maxListedValues = 5
+    let values = checkedValues.slice(0, maxListedValues).map(value => `• ${value.split(":")[0]}`);
+    if (checkedValues.length > maxListedValues) {
+        values.push(`... and ${checkedValues.length - maxListedValues} more`);
     }
-    const confirm = userConfirmed("Are you sure you want to deschedule the selected searches?\nThe following searches will be descheduled:\n" + values.join("\n"));
-    if (confirm) {
+    const userConfirmed = confirm("Are you sure you want to deschedule the selected searches?\nThe following searches will be descheduled:\n" + values.join("\n"));
+    if (userConfirmed) {
         processDeschedule(checkedValues, domain, user);
     }
 };
