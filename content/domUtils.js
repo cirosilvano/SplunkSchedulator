@@ -68,6 +68,7 @@ const createSchedulatorModal = (domain, user) => {
                 <a id="schedulator-btn-deschedule-selected" href="#" class="btn" style="margin: 0.5rem;">Deschedule selected ❌</a>
                 <a id="schedulator-btn-mass-csv-import" href="#" class="btn" style="margin: 0.5rem;">Mass CSV import 📋</a>
                 <a id="schedulator-btn-export-selected" href="#" class="btn" style="margin: 0.5rem;">Export selected to CSV ⬇️</a>
+                <a id="schedulator-bnt-move-to-app" href="#" class="btn" style="margin: 0.5rem;">Move selected to app 📦</a>
             </div>
         `;
         
@@ -111,12 +112,14 @@ const createSchedulatorModal = (domain, user) => {
         const scheduleSelectedButton = document.querySelector("#schedulator-btn-schedule-selected");
         const descheduleSelectedButton = document.querySelector("#schedulator-btn-deschedule-selected");
         const exportSelectedButton = document.querySelector("#schedulator-btn-export-selected");
+        const moveToAppButton = document.querySelector("#schedulator-bnt-move-to-app");
 
         scheduleSelectedButton.addEventListener("click", () => handleCheckboxSchedulatorButtonClick(domain, user));
         descheduleSelectedButton.addEventListener("click", () => handleDescheduleButtonClick(domain, user));
         exportSelectedButton.addEventListener("click", () => handleExportButtonClick(domain, user));
+        moveToAppButton.addEventListener("click", () => handleMoveToAppButtonClick(domain, user));
 
-        modal.addEventListener("click", (e) => {
+        modal.addEventListener("click", (e) => {        
             if (e.target.id === "custom-modal" || e.target.classList.contains("close-modal")) {
                 modal.remove();
             }

@@ -79,6 +79,17 @@ const processExport = async (checkedValues, domain, user) => {
     }
 };
 
+const processMoveToApp = async (checkedValues, domain, user) => {
+    const app = prompt("Enter the app name to move the searches to:");
+    if (app) {
+        for (const value of checkedValues) {
+            const [id, oldApp] = value.split(":");
+            await postMoveRequest(id, domain, user, oldApp, app);
+        }
+        location.reload();
+    }
+};
+
 const handleCheckboxSchedulatorButtonClick = (domain, user) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
@@ -134,6 +145,16 @@ const handleExportButtonClick = (domain, user) => {
 
 const handleSchedulatorButtonClick = (domain, user) => {
     createSchedulatorModal(domain, user);
+}
+
+const handleMoveToAppButtonClick = (domain, user) => {
+    const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
+        .map(checkbox => checkbox.value);
+    if (checkedValues.length === 0) {
+        alert("Please select at least one search to move.");
+        return;
+    };
+    processMoveToApp(checkedValues, domain, user);
 }
 
 const postCronSchedule = async (searchName, cronValue, domain, user, app) => {
@@ -204,7 +225,7 @@ const postDeschedule = async (searchName, domain, user, app) => {
 
 const getExportCronSchedule = async (searchName, domain, user, app) => {
     try {
-        const url = buildScheduleCallURL(searchName, user, domain, app);
+        const url = `${buildScheduleCallURL(searchName, user, domain, app)}/move`;
         const csrfToken = getCSRFToken();
 
         if (!csrfToken) {
@@ -229,3 +250,36 @@ const getExportCronSchedule = async (searchName, domain, user, app) => {
         return null;
     }
 };
+
+const postMoveRequest = async (searchName, domain, user, oldApp, app) => {
+    const url = `${buildScheduleCallURL(searchName, user, domain, oldApp)}/move`;
+    const body = `app=${app}&user=${user}&output_mode=json`;
+    const csrfToken = getCSRFToken();
+
+    if (!csrfToken) {
+        console.error("CSRF token missing. Aborting POST request.");
+        return;
+    }
+
+    await sendServicesPostRequest(url, body, csrfToken)
+        .then(response => {
+            if (response.ok) {
+                console.log("POST request successful.");
+                return response.text();
+            } else {
+                console.error("POST request failed with status:", response.status);
+            }
+        })
+        .then(data => {
+            if (data) {
+                //do nothing for now
+            }
+        })
+        .catch(error => {
+            // if error is TypeError then ignore it
+            if (error instanceof TypeError) {
+                return;
+            }
+            console.error("Error during POST request:", error);
+        });
+}
