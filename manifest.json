@@ -8,6 +8,14 @@
     "background": {
       "service_worker": "background.js"
     },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "assets/icons/rocket-16.png",
+        "48": "assets/icons/rocket-48.png",
+        "128": "assets/icons/rocket-128.png"
+      }
+    },
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
