@@ -20,21 +20,21 @@ const getCronExpression = (message) => {
 };
 
 // Function to process cron schedule for a single value
-const processCheckboxSchedule = (checkedValues, cronValue, domain, user) => {
-    checkedValues.forEach(value => {
+const processCheckboxSchedule = async (checkedValues, cronValue, domain, user) => {
+    for (const value of checkedValues) {
         const [id, app] = value.split(":");
-        postCronSchedule(id, cronValue, domain, user, app);
-    });
+        await postCronSchedule(id, cronValue, domain, user, app);
+    }
     location.reload();
 };
 
 // Function to process multiple schedules from CSV input
-const processCSVSchedule = (csvCronDefinition, domain, user) => {
+const processCSVSchedule = async (csvCronDefinition, domain, user) => {
     const rows = csvCronDefinition.trim().split("\n");
-    rows.forEach(row => {
+    for (const row of rows) {
         const [app, id, cron] = row.split(",");
         try {
-            postCronSchedule(id, cron, domain, user, app);
+            await postCronSchedule(id, cron, domain, user, app);
         } catch (e) {
             if (e instanceof TypeError) {
                 alert("Invalid CSV schedule format. Please provide a valid CSV format.");
@@ -43,15 +43,15 @@ const processCSVSchedule = (csvCronDefinition, domain, user) => {
             }
         }
 
-    });
+    };
     location.reload();
 };
 
-const processDeschedule = (checkedValues, domain, user) => {
-    checkedValues.forEach(value => {
+const processDeschedule = async (checkedValues, domain, user) => {
+    for (const value of checkedValues) {
         const [id, app] = value.split(":");
-        postDeschedule(id, domain, user, app);
-    });
+        await postDeschedule(id, domain, user, app);
+    }
     location.reload();
 };
 
@@ -136,7 +136,7 @@ const handleSchedulatorButtonClick = (domain, user) => {
     createSchedulatorModal(domain, user);
 }
 
-const postCronSchedule = (searchName, cronValue, domain, user, app) => {
+const postCronSchedule = async (searchName, cronValue, domain, user, app) => {
     const url = buildScheduleCallURL(searchName, user, domain, app);
     const body = `cron_schedule=${cronValue.trim().replace(/\s/g, "+")}&is_scheduled=1`;
     const csrfToken = getCSRFToken();
@@ -146,7 +146,7 @@ const postCronSchedule = (searchName, cronValue, domain, user, app) => {
         return;
     }
 
-    sendServicesPostRequest(url, body, csrfToken)
+    const response = await sendServicesPostRequest(url, body, csrfToken)
         .then(response => {
             if (response.ok) {
                 console.log("POST request successful.");
@@ -169,7 +169,7 @@ const postCronSchedule = (searchName, cronValue, domain, user, app) => {
         });
 };
 
-const postDeschedule = (searchName, domain, user, app) => {
+const postDeschedule = async (searchName, domain, user, app) => {
     const url = buildScheduleCallURL(searchName, user, domain, app);
     const body = `is_scheduled=0`;
     const csrfToken = getCSRFToken();
@@ -179,7 +179,7 @@ const postDeschedule = (searchName, domain, user, app) => {
         return;
     }
 
-    sendServicesPostRequest(url, body, csrfToken)
+    await sendServicesPostRequest(url, body, csrfToken)
         .then(response => {
             if (response.ok) {
                 console.log("POST request successful.");

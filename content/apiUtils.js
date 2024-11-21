@@ -20,8 +20,8 @@ const buildScheduleCallURL = (searchName, user, domain, app) => {
     return `${domain}/splunkd/__raw/servicesNS/${user}/${app}/saved/searches/${encodeURIComponent(searchName)}`;
 };
 
-const sendServicesPostRequest = (url, body, csrfToken) => {
-    return fetch(url, {
+const sendServicesPostRequest = async (url, body, csrfToken) => {
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -30,6 +30,11 @@ const sendServicesPostRequest = (url, body, csrfToken) => {
         },
         body
     });
+
+    if (!response.ok) {
+        console.error(`Fetch failed with status: ${response.status}`);
+        return null;
+    }
 };
 
 const sendServicesGetRequest = async (url, csrfToken) => {
