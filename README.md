@@ -28,3 +28,17 @@ You can import a configuration with `"Schedulator 🚀" > "Mass import CSV" > Pa
 
 ### 1.4 Move all selected searches to an app
 Simply move all the selected saved searches to the app of your choice. `"Schedulator 🚀" > "Move selected to app" > Type in the app > Confirm`.
+
+## 2. Installation
+As I said before, the extension is still in pre-pre-prealpha state and is not available on the Chrome Web Store. 
+You can still install it easily on Chrome (only browser supported for now).
+
+### 2.1 Turn on Developer Mode on Chrome
+Go to `chrome://extensions/`, then, on the top-right corner of the page, switch "Developer Mode" on.
+
+### 2.2 Clone the repository (or download as zip)
+You can either clone this repo via `https://github.com/cirosilvano/SplunkSchedulator/` or downloading and unarchiving the zip via GitHub.
+
+### 2.3 Add the extension to Chrome
+On `chrome://extensions/`, select "Load Unpacked" (top left) and select the "Schedulator" folder. You're done.
+
