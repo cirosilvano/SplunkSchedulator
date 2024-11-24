@@ -3,7 +3,7 @@
     "name": "Splunk Schedulator",
     "version": "1.0",
     "description": "Automate scheduling of multiple Splunk searches.",
-    "permissions": ["activeTab", "scripting"],
+    "permissions": ["activeTab"],
     "host_permissions": ["*://*/*"],
     "background": {
       "service_worker": "background.js"
