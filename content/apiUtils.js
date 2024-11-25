@@ -1,4 +1,5 @@
 // apiUtils.js
+
 const getCSRFToken = () => {
     const cookies = document.cookie.split('; ');
     return cookies.find(cookie => cookie.startsWith('splunkweb_csrf_token_'))?.split('=')[1] || null;
