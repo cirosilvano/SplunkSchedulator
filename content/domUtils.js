@@ -115,8 +115,8 @@ const createSchedulatorModal = (domain, user) => {
         const moveToAppButton = document.querySelector("#schedulator-bnt-move-to-app");
 
         scheduleSelectedButton.addEventListener("click", () => handleCheckboxSchedulatorButtonClick(domain, user));
-        descheduleSelectedButton.addEventListener("click", () => handleDescheduleButtonClick(domain, user));
-        exportSelectedButton.addEventListener("click", () => handleExportButtonClick(domain, user));
+        descheduleSelectedButton.addEventListener("click", () => handleDescheduleButtonClick(domain));
+        exportSelectedButton.addEventListener("click", () => handleExportButtonClick(domain));
         moveToAppButton.addEventListener("click", () => handleMoveToAppButtonClick(domain, user));
 
         modal.addEventListener("click", (e) => {        

@@ -14,7 +14,7 @@ const enhancePage = (domain, user) => {
     }
 };
 
-// Function to process cron schedule for a single value
+// schedule all checked searches
 const processCheckboxSchedule = async (checkedValues, cronValue, domain) => {
     for (const value of checkedValues) {
         const [id, app] = value.split(":");
@@ -23,7 +23,7 @@ const processCheckboxSchedule = async (checkedValues, cronValue, domain) => {
     location.reload();
 };
 
-// Function to process multiple schedules from CSV input
+// schedule searches from CSV import
 const processCSVSchedule = async (csvCronDefinition, domain) => {
     const rows = csvCronDefinition.trim().split("\n");
     for (const row of rows) {
@@ -42,7 +42,8 @@ const processCSVSchedule = async (csvCronDefinition, domain) => {
     location.reload();
 };
 
-const processDeschedule = async (checkedValues, domain, user) => {
+// deschedule all checked searches
+const processDeschedule = async (checkedValues, domain) => {
     for (const value of checkedValues) {
         const [id, app] = value.split(":");
         await postDeschedule(id, domain, app);
@@ -50,7 +51,8 @@ const processDeschedule = async (checkedValues, domain, user) => {
     location.reload();
 };
 
-const processExport = async (checkedValues, domain, user) => {
+
+const processCSVExport = async (checkedValues, domain) => {
     let csvContent = "";
 
     try {
@@ -110,32 +112,35 @@ const handleCSVSchedulatorButtonClick = (domain, user, csvCron) => {
     }
 };
 
-const handleDescheduleButtonClick = (domain, user) => {
+const handleDescheduleButtonClick = (domain) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
     if (checkedValues.length === 0) {
         alert("Please select at least one search to deschedule.");
         return;
     };
+
+    // limit amount of searches to be listed in the confirmation prompt
     const maxListedValues = 5
     let values = checkedValues.slice(0, maxListedValues).map(value => `• ${value.split(":")[0]}`);
     if (checkedValues.length > maxListedValues) {
         values.push(`... and ${checkedValues.length - maxListedValues} more`);
     }
+
     const userConfirmed = confirm("Are you sure you want to deschedule the selected searches?\nThe following searches will be descheduled:\n" + values.join("\n"));
     if (userConfirmed) {
-        processDeschedule(checkedValues, domain, user);
+        processDeschedule(checkedValues, domain);
     }
 };
 
-const handleExportButtonClick = (domain, user) => {
+const handleExportButtonClick = (domain) => {
     const checkedValues = Array.from(document.querySelectorAll('.schedulator-checkbox:checked'))
         .map(checkbox => checkbox.value);
     if (checkedValues.length === 0) {
         alert("Please select at least one search to export.");
         return;
     };
-    processExport(checkedValues, domain, user);
+    processCSVExport(checkedValues, domain);
 }
 
 const handleSchedulatorButtonClick = (domain, user) => {
