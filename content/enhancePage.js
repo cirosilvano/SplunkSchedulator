@@ -239,7 +239,7 @@ const postDeschedule = async (searchName, domain, user, app) => {
 
 const getExportCronSchedule = async (searchName, domain, user, app) => {
     try {
-        const url = `${buildScheduleCallURL(searchName, user, domain, app)}/move`;
+        const url = `${buildScheduleCallURL(searchName, user, domain, app)}/`;
         const csrfToken = getCSRFToken();
 
         if (!csrfToken) {
