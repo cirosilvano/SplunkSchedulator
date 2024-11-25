@@ -53,7 +53,7 @@ const processCSVSchedule = async (csvCronDefinition, domain, user) => {
 const processDeschedule = async (checkedValues, domain, user) => {
     for (const value of checkedValues) {
         const [id, app] = value.split(":");
-        await postDeschedule(id, domain, user, app);
+        await postDeschedule(id, domain, app);
     }
     location.reload();
 };
@@ -64,7 +64,7 @@ const processExport = async (checkedValues, domain, user) => {
     try {
         for (const value of checkedValues) {
             const [id, app] = value.split(":");
-            const cronSchedule = await getExportCronSchedule(id, domain, user, app);
+            const cronSchedule = await getExportCronSchedule(id, domain, app);
             csvContent += app + "," + id + "," + cronSchedule + "\n";
         }
 
@@ -201,13 +201,14 @@ const updateCronSchedule = async (searchName, cronValue, domain, app) => {
 
 };
 
-const postDeschedule = async (searchName, domain, user, app) => {
-    const url = buildScheduleCallURL(searchName, user, domain, app);
+const postDeschedule = async (searchName, domain, app) => {
     const csrfToken = getCSRFToken();
-
-    const jsonBody = await sendServicesGetRequest(url, csrfToken);
+    const urlGet = buildScheduleCallURL(searchName, "-", domain, app);
+    const jsonBody = await sendServicesGetRequest(urlGet, csrfToken);
     jsonBody.entry[0].content.is_scheduled = 0
     const body = createOutputPayload(jsonBody);
+    const user = jsonBody.entry[0].id.match(/servicesNS\/([^\/]+)/)?.[1]; // user must be the one from the id of the search (is actually a URL)
+    const url = buildScheduleCallURL(searchName, user, domain, app);
 
     if (!csrfToken) {
         console.error("CSRF token missing. Aborting POST request.");
@@ -237,9 +238,9 @@ const postDeschedule = async (searchName, domain, user, app) => {
         });
 };
 
-const getExportCronSchedule = async (searchName, domain, user, app) => {
+const getExportCronSchedule = async (searchName, domain, app) => {
     try {
-        const url = `${buildScheduleCallURL(searchName, user, domain, app)}/`;
+        const url = `${buildScheduleCallURL(searchName, "-", domain, app)}/`;
         const csrfToken = getCSRFToken();
 
         if (!csrfToken) {
