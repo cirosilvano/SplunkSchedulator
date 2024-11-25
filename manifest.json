@@ -20,6 +20,7 @@
       {
         "matches": ["<all_urls>"],
         "js": [
+          "content/fieldsToMonitor.js",
           "content/apiUtils.js",
           "content/domUtils.js",
           "content/enhancePage.js",
